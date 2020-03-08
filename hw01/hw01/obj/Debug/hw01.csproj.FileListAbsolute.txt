@@ -1,0 +1,6 @@
+D:\FI_MUNI\PV_178\hw01\hw01\bin\Debug\hw01.exe.config
+D:\FI_MUNI\PV_178\hw01\hw01\bin\Debug\hw01.exe
+D:\FI_MUNI\PV_178\hw01\hw01\bin\Debug\hw01.pdb
+D:\FI_MUNI\PV_178\hw01\hw01\obj\Debug\hw01.csprojAssemblyReference.cache
+D:\FI_MUNI\PV_178\hw01\hw01\obj\Debug\hw01.exe
+D:\FI_MUNI\PV_178\hw01\hw01\obj\Debug\hw01.pdb
