@@ -1,0 +1,10 @@
+D:\FI_MUNI\pv178\hw02\MenuScrapper\bin\Debug\MenuScrapper.exe.config
+D:\FI_MUNI\pv178\hw02\MenuScrapper\bin\Debug\MenuScrapper.exe
+D:\FI_MUNI\pv178\hw02\MenuScrapper\bin\Debug\MenuScrapper.pdb
+D:\FI_MUNI\pv178\hw02\MenuScrapper\bin\Debug\HtmlAgilityPack.dll
+D:\FI_MUNI\pv178\hw02\MenuScrapper\bin\Debug\HtmlAgilityPack.pdb
+D:\FI_MUNI\pv178\hw02\MenuScrapper\bin\Debug\HtmlAgilityPack.xml
+D:\FI_MUNI\pv178\hw02\MenuScrapper\obj\Debug\MenuScrapper.csprojAssemblyReference.cache
+D:\FI_MUNI\pv178\hw02\MenuScrapper\obj\Debug\MenuScrapper.csproj.CopyComplete
+D:\FI_MUNI\pv178\hw02\MenuScrapper\obj\Debug\MenuScrapper.exe
+D:\FI_MUNI\pv178\hw02\MenuScrapper\obj\Debug\MenuScrapper.pdb
