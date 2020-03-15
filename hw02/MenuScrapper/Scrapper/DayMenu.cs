@@ -24,7 +24,6 @@ namespace MenuScrapper
         public DayMenu(DateTime date, string soup, Food[] foods)
         {
             Day = date;
-            soup.Append('X');
             Soup = soup;
             Foods = new Food[foods.Length];
             foods.CopyTo(Foods, 0);
@@ -35,7 +34,7 @@ namespace MenuScrapper
             StringBuilder builder = new StringBuilder();
             builder.AppendLine(Day.ToString("dd. MM. yyyy - dddd"));
             builder.Append("Polévka: ");
-            builder.AppendLine(Soup);
+            builder.AppendLine(Soup ?? "-");
             for (int i = 0; i < Foods.Length; i++)
             {
                 builder.AppendLine((i + 1) + ") " + Foods[i]);

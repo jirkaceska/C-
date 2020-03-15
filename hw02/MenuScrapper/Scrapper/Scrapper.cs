@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using MenuScrapper.Enums;
+using MenuScrapper.Exceptions;
 using System;
 using System.Linq;
 
@@ -17,8 +18,8 @@ namespace MenuScrapper
     /// </summary>
     public class Scrapper
     {
-        public static readonly int restaurantsCount = Enum.GetNames(typeof(Restaurants)).Length;
-        private readonly Restaurant[] restaurants = new Restaurant[restaurantsCount];
+        public static readonly int RestaurantsCount = Enum.GetNames(typeof(Restaurants)).Length;
+        private readonly Restaurant[] restaurants = new Restaurant[RestaurantsCount];
         private Restaurants loaded = 0;
         private static Scrapper scrapper;
 
@@ -88,16 +89,18 @@ namespace MenuScrapper
                 DateTime date = Utils.ParseDateTime(dateStr);
 
                 HtmlNodeCollection rows = day.SelectNodes("./div[@class='row']");
-                string soup = rows[0].SelectSingleNode("./div").InnerText.Substring(9);
-                Food[] foods = new Food[4];
-                for (int i = 0; i < 4; i++)
-                {
-                    string description = HtmlEntity.DeEntitize(Utils.RemoveLeadingNumbers(
-                        rows[i + 1].SelectSingleNode("./div[@class='col-sm-10 col-xs-9']").InnerText));
-                    int price = Utils.ParsePrice(
-                        rows[i + 1].SelectSingleNode("./div[@class='col-sm-2 col-xs-3 special-menu-price']").InnerText);
-                    foods[i] = new Food(description, price);
-                }
+                int soupIndex = rows[0].SelectSingleNode("./div").InnerText.IndexOf("Polévka:", 0, 8);
+                string soup = soupIndex >= 0 ? rows[0].SelectSingleNode("./div").InnerText.Substring(9) : null;
+                Food[] foods = rows
+                    .Where((_, index) => index > soupIndex)
+                    .Select((row) => new Food(
+                        HtmlEntity.DeEntitize(Utils.RemoveLeadingNumbers(
+                            row.SelectSingleNode("./div[@class='col-sm-10 col-xs-9']").InnerText)
+                        ),
+                        Utils.ParsePrice(
+                            row.SelectSingleNode("./div[@class='col-sm-2 col-xs-3 special-menu-price']").InnerText
+                        )
+                    )).ToArray();
                 return new DayMenu(date, soup, foods);
             }
 
@@ -120,7 +123,7 @@ namespace MenuScrapper
 
             if (rows == null)
             {
-                throw new Exception("Pizzeria Alcapone - Brno:\nV menu nejsou o víkendu žádné položky, vraťe se v pondělí.");
+                throw new WeekendEmptyException("Pizzeria Alcapone - Brno:\nV menu nejsou o víkendu žádné položky, vraťe se v pondělí.");
             }
             int daysCount = rows.Count / rowPerDay;
             DayMenu[] dayMenus = new DayMenu[daysCount];
@@ -162,7 +165,7 @@ namespace MenuScrapper
                 HtmlNodeCollection rows = text.SelectNodes("./p");
                 string soup = rows[0].InnerText;
                 Food[] foods = rows
-                    .Where((n, i) => i > 0 && i % 2 == 0)
+                    .Where((_, index) => index > 0 && index % 2 == 0)
                     .Zip(prices, (HtmlNode food, HtmlNode price) => new Food(
                         HtmlEntity.DeEntitize(food.InnerText.Trim()),
                         Utils.ParsePrice(price.InnerText.Split('-')[1].Trim(), ' ')

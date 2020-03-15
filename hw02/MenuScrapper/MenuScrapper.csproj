@@ -62,16 +62,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="DayMenu.cs" />
+    <Compile Include="Exceptions\WeekendEmptyException.cs" />
+    <Compile Include="Scrapper\DayMenu.cs" />
     <Compile Include="Enums\FlagDayOfWeek.cs" />
     <Compile Include="Enums\Options.cs" />
     <Compile Include="Enums\Restaurants.cs" />
-    <Compile Include="Food.cs" />
+    <Compile Include="Scrapper\Food.cs" />
     <Compile Include="MenuHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Restaurant.cs" />
-    <Compile Include="Scrapper.cs" />
+    <Compile Include="Scrapper\Restaurant.cs" />
+    <Compile Include="Scrapper\Scrapper.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

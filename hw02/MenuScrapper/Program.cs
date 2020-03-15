@@ -13,6 +13,8 @@ namespace MenuScrapper
                 string optionString = Console.ReadLine();
                 handler.ParseOption(optionString);
             }
+
+            Console.ReadLine();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MenuScrapper.Enums;
+using MenuScrapper.Exceptions;
 using System;
 using System.Linq;
 using System.Net;
@@ -20,7 +21,7 @@ namespace MenuScrapper
         /// <returns>True if set was successful, false otherwise.</returns>
         private bool SetSelectedRestaurant(int value)
         {
-            if (1 <= value && value <= Scrapper.restaurantsCount)
+            if (1 <= value && value <= Scrapper.RestaurantsCount)
             {
                 selectedRestaurant = (Restaurants)(1 << (value - 1));
                 return true;
@@ -87,7 +88,7 @@ namespace MenuScrapper
             Console.WriteLine("2 - Al Capone - Pizzeria Ristorante");
             Console.WriteLine("3 - Plzeňský dvůr");
             Console.WriteLine();
-            Console.WriteLine("Vyber možnost z intervalu <1,{0}>:", Scrapper.restaurantsCount);
+            Console.WriteLine("Vyber možnost z intervalu <1,{0}>:", Scrapper.RestaurantsCount);
         }
 
         public static void PrintDayOptions()
@@ -156,8 +157,10 @@ namespace MenuScrapper
                     Error();
                     break;
             }
-
-            Display();
+            if (selectedDay != 0 && selectedRestaurant != 0)
+            {
+                Display();
+            }
         }
 
         private void Display()
@@ -167,40 +170,37 @@ namespace MenuScrapper
 
         private void Display(Func<DayMenu, bool> customFilter)
         {
-            if (selectedDay != 0 && selectedRestaurant != 0)
+            for (int i = 0; i < Scrapper.RestaurantsCount; i++)
             {
-                for (int i = 0; i < Scrapper.restaurantsCount; i++)
+                if (selectedRestaurant.HasFlag((Restaurants)(1 << i)))
                 {
-                    if (selectedRestaurant.HasFlag((Restaurants)(1 << i)))
+                    try
                     {
-                        try
-                        {
-                            Restaurant restaurant = scrapper[i];
+                        Restaurant restaurant = scrapper[i];
 
-                            var dayMenus = restaurant.
-                                Where((menu) => selectedDay.HasFlag(menu.Day.FlagDayOfWeek())).
-                                Where(customFilter);
+                        var dayMenus = restaurant.
+                            Where((menu) => selectedDay.HasFlag(menu.Day.FlagDayOfWeek())).
+                            Where(customFilter);
 
-                            if (dayMenus.Count() > 0)
-                                PrintRestaurant(restaurant);
-                            foreach (DayMenu menu in dayMenus)
-                                Console.WriteLine(menu);
-                        }
-                        catch (WebException e)
-                        {
-                            PrintLine();
-                            Console.WriteLine(e.Message);
-                            Console.WriteLine("Zkontrolujte své připojení k internetu. Poté zkuste zobrazit menu znovu.");
-                        }
-                        catch (Exception e)
-                        {
-                            PrintLine();
-                            Console.WriteLine(e.Message);
-                        }
+                        if (dayMenus.Count() > 0)
+                            PrintRestaurant(restaurant);
+                        foreach (DayMenu menu in dayMenus)
+                            Console.WriteLine(menu);
+                    }
+                    catch (WebException e)
+                    {
+                        PrintLine();
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine("Zkontrolujte své připojení k internetu. Poté zkuste zobrazit menu znovu.");
+                    }
+                    catch (WeekendEmptyException e)
+                    {
+                        PrintLine();
+                        Console.WriteLine(e.Message);
                     }
                 }
-                Init();
             }
+            Init();
         }
 
         private void PrintRestaurant(Restaurant r)
@@ -256,6 +256,7 @@ namespace MenuScrapper
 
                 case Options.Quit:
                     IsFinished = true;
+                    Console.WriteLine("Dobrou chuť!");
                     break;
             }
         }
