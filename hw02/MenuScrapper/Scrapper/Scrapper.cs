@@ -92,7 +92,10 @@ namespace MenuScrapper
                 int soupIndex = rows[0].SelectSingleNode("./div").InnerText.IndexOf("Polévka:", 0, 8);
                 string soup = soupIndex >= 0 ? rows[0].SelectSingleNode("./div").InnerText.Substring(9) : null;
                 Food[] foods = rows
-                    .Where((_, index) => index > soupIndex)
+                    // Check if row is really food and not soup or note
+                    .Where((row, index) => index > soupIndex 
+                        && row.SelectSingleNode("./div[@class='col-sm-10 col-xs-9']") != null
+                        && row.SelectSingleNode("./div[@class='col-sm-2 col-xs-3 special-menu-price']") != null)
                     .Select((row) => new Food(
                         HtmlEntity.DeEntitize(Utils.RemoveLeadingNumbers(
                             row.SelectSingleNode("./div[@class='col-sm-10 col-xs-9']").InnerText)
