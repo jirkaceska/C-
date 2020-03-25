@@ -1,0 +1,6 @@
+D:\FI_MUNI\pv178\hw03\PV178.Homeworks.HW03\bin\Debug\PV178.Homeworks.HW03.exe.config
+D:\FI_MUNI\pv178\hw03\PV178.Homeworks.HW03\bin\Debug\PV178.Homeworks.HW03.exe
+D:\FI_MUNI\pv178\hw03\PV178.Homeworks.HW03\bin\Debug\PV178.Homeworks.HW03.pdb
+D:\FI_MUNI\pv178\hw03\PV178.Homeworks.HW03\obj\Debug\PV178.Homeworks.HW03.csprojAssemblyReference.cache
+D:\FI_MUNI\pv178\hw03\PV178.Homeworks.HW03\obj\Debug\PV178.Homeworks.HW03.exe
+D:\FI_MUNI\pv178\hw03\PV178.Homeworks.HW03\obj\Debug\PV178.Homeworks.HW03.pdb
