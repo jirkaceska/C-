@@ -1,0 +1,10 @@
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04\bin\Debug\PV178.Homeworks.HW04.exe.config
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04\bin\Debug\PV178.Homeworks.HW04.exe
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04\bin\Debug\PV178.Homeworks.HW04.pdb
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04\bin\Debug\CsvHelper.dll
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04\bin\Debug\CsvHelper.pdb
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04\bin\Debug\CsvHelper.xml
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04\obj\Debug\PV178.Homeworks.HW04.csprojAssemblyReference.cache
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04\obj\Debug\PV178.Homeworks.HW04.csproj.CopyComplete
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04\obj\Debug\PV178.Homeworks.HW04.exe
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04\obj\Debug\PV178.Homeworks.HW04.pdb

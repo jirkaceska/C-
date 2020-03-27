@@ -1,0 +1,14 @@
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\bin\Debug\PV178.Homeworks.HW04.Tests.dll
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\bin\Debug\PV178.Homeworks.HW04.Tests.pdb
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\bin\Debug\PV178.Homeworks.HW04.exe
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\bin\Debug\CsvHelper.dll
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\bin\Debug\PV178.Homeworks.HW04.pdb
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\bin\Debug\PV178.Homeworks.HW04.exe.config
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\bin\Debug\CsvHelper.pdb
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\bin\Debug\CsvHelper.xml
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\bin\Debug\cs\Microsoft.VisualStudio.QualityTools.UnitTestFramework.resources.dll
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\obj\Debug\PV178.Homeworks.HW04.Tests.csprojAssemblyReference.cache
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\obj\Debug\PV178.Homeworks.HW04.Tests.csproj.CopyComplete
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\obj\Debug\PV178.Homeworks.HW04.Tests.dll
+D:\FI_MUNI\pv178\hw04\PV178.Homeworks.HW04.Tests\obj\Debug\PV178.Homeworks.HW04.Tests.pdb
