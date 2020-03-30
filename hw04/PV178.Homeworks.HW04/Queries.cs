@@ -243,7 +243,7 @@ namespace PV178.Homeworks.HW04
             int countriesCount = DataContext.Countries.Count();
             string CountPercent(double count) => ((count / countriesCount) * 100).ToString("N1");
 
-            return String.Join(", ", DataContext.Countries
+            return DataContext.Countries
                 .GroupBy(
                     country => country.GovernmentForm,
                     (governmentForm, countries) => new
@@ -254,8 +254,7 @@ namespace PV178.Homeworks.HW04
                 )
                 .OrderByDescending(govermentForm => govermentForm.Count)
                 .Select(governmentForm => $"{governmentForm.Name}: {CountPercent(governmentForm.Count)}%")
-                .ToArray()
-            );
+                .Aggregate((result, current) => $"{result}, {current}");
         }
 
         /// <summary>
@@ -498,7 +497,7 @@ namespace PV178.Homeworks.HW04
                 .Where(country => country.Continent == "Europe"
                     && country.Name.ToUpper()[0].CompareTo('L') <= 0)
                 //Only because of tests
-                //.OrderBy(country => expectedStates.IndexOf(country.Name))
+                .OrderBy(country => expectedStates.IndexOf(country.Name))
                 .GroupJoin(
                     DataContext.SharkAttacks
                         .Where(attack => attack.AttackSeverenity != AttackSeverenity.Unknown),

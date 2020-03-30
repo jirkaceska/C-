@@ -31,6 +31,8 @@ namespace PV178.Homeworks.HW04
 
         /// <summary>
         /// Inner join (equal to Join extension) without usage of join.
+        /// Does not preserve order of Join!!
+        /// 
         /// Correlates the elements of two sequences based on matching keys. The default 
         /// equality comparer is used to compare keys.
         /// (Copypasted from Join documentation)
@@ -68,23 +70,25 @@ namespace PV178.Homeworks.HW04
 
         /// <summary>
         /// Extract distinct keys from collection of elements.
+        /// Filter null values
         /// </summary>
         /// <typeparam name="TKey">Type of key returned by the key selector function.</typeparam>
         /// <typeparam name="T">Type of elements in collection.</typeparam>
         /// <param name="collection">Collection to project.</param>
         /// <param name="collectionKeySelector">Function to extract key from element.</param>
-        /// <returns>Collection of distinct keys of input elements.</returns>
+        /// <returns>Collection of distinct keys (without null values) of input elements.</returns>
         public static IEnumerable<TKey> Project<TKey, T>(
             this IEnumerable<T> collection,
             Func<T, TKey> collectionKeySelector
         )
         {
-            return collection.Select(collectionKeySelector).Distinct();
+            return collection.Select(collectionKeySelector).Where(key => key != null).Distinct();
         }
 
         /// <summary>
         /// Prepare collection to join.
-        /// Filter out elements with keys not present in other collection, then order and group by key.
+        /// Filter out elements with null keys or keys not present in other collection, 
+        /// then order and group by key.
         /// </summary>
         /// <typeparam name="TOuter">The type of the elements of the first sequence.</typeparam>
         /// <typeparam name="TInner">The type of the elements of the second sequence.</typeparam>
