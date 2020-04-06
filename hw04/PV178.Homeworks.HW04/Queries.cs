@@ -454,57 +454,23 @@ namespace PV178.Homeworks.HW04
                         return 0;
                 }
             }
-            //Only because of tests
-            var expectedStates = new List<string>
-            {
-                #region States
-
-                "Italy",
-                "Croatia",
-                "Greece",
-                "France",
-                "Ireland",
-                "Albania",
-                "Andorra",
-                "Austria",
-                "Belarus",
-                "Belgium",
-                "Bosnia and Herzegovina",
-                "Bulgaria",
-                "Czech Republic",
-                "Denmark",
-                "Estonia",
-                "Faroe Islands",
-                "Finland",
-                "Germany",
-                "Gibraltar",
-                "Guernsey",
-                "Holy See (Vatican City)",
-                "Hungary",
-                "Iceland",
-                "Isle of Man",
-                "Jersey",
-                "Kosovo",
-                "Latvia",
-                "Liechtenstein",
-                "Lithuania",
-                "Luxembourg"
-
-                #endregion States
-            };
-
             return DataContext.Countries
                 .Where(country => country.Continent == "Europe"
                     && country.Name.ToUpper()[0].CompareTo('L') <= 0)
-                //Only because of tests
-                .OrderBy(country => expectedStates.IndexOf(country.Name))
+                .OrderBy(country => country.Name)
                 .GroupJoin(
                     DataContext.SharkAttacks
                         .Where(attack => attack.AttackSeverenity != AttackSeverenity.Unknown),
                     country => country.Id,
                     attack => attack.CountryId,
-                    (country, attacks) => $"{country.Name}: {attacks.Select(CalculateFee).Sum()} {country.CurrencyCode}"
+                    (country, attacks) => new { 
+                        country.Name, 
+                        Fee = attacks.Select(CalculateFee).Sum(), 
+                        country.CurrencyCode 
+                    }
                 )
+                .OrderByDescending(info => info.Fee)
+                .Select(info => $"{info.Name}: {info.Fee} {info.CurrencyCode}")
                 .ToList();
         }
     }

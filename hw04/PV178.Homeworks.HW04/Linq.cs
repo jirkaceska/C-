@@ -13,10 +13,8 @@ namespace PV178.Homeworks.HW04
         /// <param name="subset">Subset to check.</param>
         /// <param name="superset">Superset to compare.</param>
         /// <returns>True if every item in subset is also in superset, false otherwise.</returns>
-        public static bool IsSubsetOf<T>(this IEnumerable<T> subset, IEnumerable<T> superset)
-        {
-            return !subset.Except(superset).Any();
-        }
+        public static bool IsSubsetOf<T>(this IEnumerable<T> subset, IEnumerable<T> superset) 
+            => !subset.Except(superset).Any();
 
         /// <summary>
         /// Identity function. return its input
@@ -24,10 +22,7 @@ namespace PV178.Homeworks.HW04
         /// <typeparam name="T">Type of input.</typeparam>
         /// <param name="item">Input.</param>
         /// <returns>Passed input.</returns>
-        public static T Id<T>(T item)
-        {
-            return item;
-        }
+        public static T Id<T>(T item) => item;
 
         /// <summary>
         /// Inner join (equal to Join extension) without usage of join.
@@ -54,19 +49,17 @@ namespace PV178.Homeworks.HW04
             Func<TOuter, TKey> outerKeySelector,
             Func<TInner, TKey> innerKeySelector,
             Func<TOuter, TInner, TResult> resultSelector
-        )
-        {
-            return outer.PrepareToJoin(inner, outerKeySelector, innerKeySelector)
-                .Zip(
-                    inner.PrepareToJoin(outer, innerKeySelector, outerKeySelector),
-                    (outerGroup, innerGroup) => outerGroup
-                        .SelectMany(
-                            outerItem => Enumerable
-                                .Repeat(outerItem, innerGroup.Count())
-                                .Zip(innerGroup, resultSelector)
-                        )
-                ).SelectMany(Id);
-        }
+        ) => outer
+            .PrepareToJoin(inner, outerKeySelector, innerKeySelector)
+            .Zip(
+                inner.PrepareToJoin(outer, innerKeySelector, outerKeySelector),
+                (outerGroup, innerGroup) => outerGroup
+                    .SelectMany(
+                        outerItem => Enumerable
+                            .Repeat(outerItem, innerGroup.Count())
+                            .Zip(innerGroup, resultSelector)
+                    )
+            ).SelectMany(Id);
 
         /// <summary>
         /// Extract distinct keys from collection of elements.
@@ -80,10 +73,7 @@ namespace PV178.Homeworks.HW04
         public static IEnumerable<TKey> Project<TKey, T>(
             this IEnumerable<T> collection,
             Func<T, TKey> collectionKeySelector
-        )
-        {
-            return collection.Select(collectionKeySelector).Where(key => key != null).Distinct();
-        }
+        ) => collection.Select(collectionKeySelector).Where(key => key != null).Distinct();
 
         /// <summary>
         /// Prepare collection to join.

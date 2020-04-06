@@ -10,7 +10,7 @@ namespace PV178.Homeworks.HW04
         static void Main(string[] args)
         {
             var queries = new Queries();
-            foreach(var x in queries.InfoAboutPeopleThatWasInBahamasHeroicModeQuery())
+            foreach(var x in queries.InfoAboutFinesInEuropeQuery())
             {
                 System.Console.WriteLine(x);
             }
