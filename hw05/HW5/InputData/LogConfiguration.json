@@ -1,0 +1,42 @@
+﻿[
+  {
+    "OutputFilepath": "..\\..\\OutputData\\json_correctlog1.txt",
+    "Format": "%h %l %u %t %r %s %b",
+    "IPAddresses": [
+      "100.100.100.100",
+      "100.100.100.101",
+      "41.47.21.35",
+      "11.15.2.35",
+      "74.86.45.100",
+      "100.181.100.114"
+    ],
+    "UserIds": [
+      "Bob",
+      "Alice",
+      "Adam"
+    ]
+  },
+  {
+    "OutputFilepath": "..\\..\\OutputData\\json_correctlog2.txt",
+    "Format": "%t %b %h %l %u %r %s",
+    "IPAddresses": [
+      "5.5.5.5",
+      "15.16.17.18"
+    ],
+    "UserIds": [
+      "nbu123",
+      "password1",
+      "qwerty"
+    ]
+  },
+  {
+    "OutputFilepath": "json_incorrectlog.txt",
+    "Format": "%t %b %h %l %u %r %s",
+    "IPAddresses": [
+      "6.7.8.400"
+    ],
+    "UserIds": [
+      "singleuser"
+    ]
+  }
+]
