@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Database.Utils
 {
+    /// <summary>
+    /// Compare PSOBject by its BaseObject value.
+    /// </summary>
     class PSObjectComparer : IEqualityComparer<PSObject>
     {
         public bool Equals(PSObject x, PSObject y)
@@ -24,6 +27,9 @@ namespace Database.Utils
         }
     }
 
+    /// <summary>
+    /// Compare result of PSScript.
+    /// </summary>
     class PSScriptResultComparer : IEqualityComparer<IEnumerable<PSObject>>
     {
         private readonly IEqualityComparer<PSObject> comparer = new PSObjectComparer();

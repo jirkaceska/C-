@@ -10,6 +10,8 @@ using Database.Utils;
 using TTRider.PowerShellAsync;
 using System.Collections.ObjectModel;
 using System.Management.Automation.Host;
+using System.Globalization;
+using System.ComponentModel;
 
 namespace Database
 {
@@ -19,9 +21,26 @@ namespace Database
         No
     }
 
+    /// <summary>
+    /// <para type="synopsis">Convert enumeration of PSObject to DataTable.</para>
+    /// <para type="description">Needed for processing by most of this module cmdlets.</para>
+    /// <para type="description">Cmdlet provide type control (if appropriate DataTable is provided as parameter) with possibility to fix invalid values.</para>
+    /// </summary>
+    /// <example>
+    ///   <para>Add processes to DataTable. Do not forget to filter only useful properties.</para>
+    ///   <code>Get-Process | select -Property Id, ProcessName | ConvertTo-DataTable Processes</code>
+    /// </example>
+    /// <example>
+    ///   <para>Import table from CSV to DataTable with name Table.</para>
+    ///   <code>Import-Csv -Path .\test.csv | ConvertTo-DataTable Table</code>
+    /// </example>
     [Cmdlet(VerbsData.ConvertTo, "DataTable")]
+    [OutputType(typeof(DataTable))]
     public class ConvertToDataTable : PSCmdlet
     {
+        /// <summary>
+        /// <para type="description">Name of table.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             Position = 0,
@@ -29,18 +48,27 @@ namespace Database
         )]
         public string TableName { get; set; }
 
+        /// <summary>
+        /// <para type="description">Table to populate. If not provided, new is created and its schema is derived from first row.</para>
+        /// </summary>
         [Parameter(
             Position = 1,
             HelpMessage = "Table to populate. If not provided, new is created and its schema is derived from first row."
         )]
         public DataTable Table { get; set; }
 
+        /// <summary>
+        /// <para type="description">Column indices which are considered to be in primary key. Numbered from 0. Default is first (0).</para>
+        /// </summary>
         [Parameter(
             Position = 2,
             HelpMessage = "Column indices which are considered to be in primary key. Numbered from 0. Default is first (0)."
         )]
         public int[] PrimaryKeyColumns { get; set; } = { 0 };
 
+        /// <summary>
+        /// <para type="description">Rows to convert to DataTable.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             ValueFromPipeline = true,
@@ -48,9 +76,15 @@ namespace Database
             HelpMessage = "Rows to convert to DataTable."
         )]
         public PSObject Row { get; set; }
-        
+
+        /// <summary>
+        /// <para type="description">Is table initialized.</para>
+        /// </summary>
         public bool IsInitialized { get; private set; } = true;
 
+        /// <summary>
+        /// <para type="description">Begin processing.</para>
+        /// </summary>
         protected override void BeginProcessing()
         {
             if (Table == null)
@@ -60,6 +94,9 @@ namespace Database
             }
         }
 
+        /// <summary>
+        /// <para type="description">Process record.</para>
+        /// </summary>
         protected override void ProcessRecord()
         {
             if (!IsInitialized)
@@ -89,6 +126,9 @@ namespace Database
             } while (!dataRowValid);
         }
 
+        /// <summary>
+        /// <para type="description">End processing.</para>
+        /// </summary>
         protected override void EndProcessing()
         {
             WriteObject(Table);
@@ -142,13 +182,17 @@ namespace Database
                 )
             );
 
-            foreach (var property in Row.SelectKeyValuePair(PropertyToColumn))
+            foreach (var property in Row.Properties)
             {
-                var type = property.Value;
+                var type = Type.GetType(property.TypeNameOfValue);
+                if (type == null)
+                {
+                    continue;
+                }
                 if (type == typeof(DBNull))
                 {
                     var choice = Host.UI.PromptForChoice(
-                        $"Column {property.Key} at first row contains NULL and therefore cannot be determined its type.",
+                        $"Column {property.Name} at first row contains NULL and therefore cannot be determined its type.",
                         "Please choose type:",
                         choices,
                         Constants.DBTypes.Count - 2
@@ -157,7 +201,15 @@ namespace Database
                 }
                 try
                 {
-                    Table.Columns.Add(property.Key, type);
+                    if (Constants.DBTypes.Any(tuple => tuple.Value == type))
+                    {
+                        WriteVerbose($"Column {property.Name} is added to database");
+                        Table.Columns.Add(property.Name, type);
+                    }
+                    else
+                    {
+                        WriteWarning($"Column {property.Name} will be skipped because its type cannot be saved to database.");
+                    }
                 }
                 catch (DuplicateNameException e)
                 {
@@ -172,13 +224,18 @@ namespace Database
             if (e is ArgumentException)
             {
                 var expectedType = Table.Columns[property.Name].DataType.Name;
-                Host.UI.WriteErrorLine($"Invalid cast type at {Row.SelectKeyValuePair(PropertyToTuple).Select(FormatExtension.FormatKeyValuePair).ConcatAndWrap()}");
+                Host.UI.WriteErrorLine($"Invalid cast type at {Row.SelectKeyValuePair(Table, PropertyToTuple).Select(FormatExtension.FormatKeyValuePair).ConcatAndWrap()}");
                 Host.UI.WriteErrorLine($"Cannot convert a <{property.Value}> to a {expectedType}.");
             }
             else if (e is ConstraintException)
             {
-                Host.UI.WriteErrorLine($"Constraint violation at {Row.SelectKeyValuePair(PropertyToTuple).Select(FormatExtension.FormatKeyValuePair).ConcatAndWrap()}");
+                Host.UI.WriteErrorLine($"Constraint violation at {Row.SelectKeyValuePair(Table, PropertyToTuple).Select(FormatExtension.FormatKeyValuePair).ConcatAndWrap()}");
                 Host.UI.WriteErrorLine($"Column {property.Name} is constrained to be unique. Value <{property.Value}> is already inserted.");
+            }
+            else if (e is GetValueInvocationException)
+            {
+                Host.UI.WriteErrorLine($"Cannot read row attribute at {Row.SelectKeyValuePair(Table, PropertyToTuple).Select(FormatExtension.FormatKeyValuePair).ConcatAndWrap()}");
+                return Options.No;
             }
             var options = Enum.GetValues(typeof(Options)).Cast<object>();
 
@@ -194,15 +251,20 @@ namespace Database
         {
             try
             {
-                if (property.Value.Equals(""))
+                if (property.Value == null || property.Value.Equals(""))
                 {
                     property.Value = DBNull.Value;
                 }
+                if (property.Value.GetType() == typeof(PSObject))
+                {
+                    property.Value = ((PSObject)property.Value).BaseObject;
+                }
                 row[property.Name] = property.Value;
+
                 shouldSkipLine = false;
                 return true;
             }
-            catch (Exception e) when (e is ArgumentException || e is ConstraintException)
+            catch (Exception e) when (e is ArgumentException || e is ConstraintException || e is GetValueInvocationException)
             {
                 shouldSkipLine = TryChangePropertyValue(property, e);
                 return shouldSkipLine;
@@ -235,11 +297,6 @@ namespace Database
         private KeyValuePair<string, object> PropertyToTuple(PSPropertyInfo property)
         {
             return new KeyValuePair<string, object>(property.Name, property.Value);
-        }
-
-        private KeyValuePair<string, Type> PropertyToColumn(PSPropertyInfo property)
-        {
-            return new KeyValuePair<string, Type>(property.Name, Type.GetType(property.TypeNameOfValue));
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Database.Utils
 {
-    public static class Constants
+    static class Constants
     {
         public static readonly List<KeyValuePair<string, Type>> DBTypes = new List<KeyValuePair<string, Type>>()
         {
@@ -25,6 +25,12 @@ namespace Database.Utils
             new KeyValuePair<string, Type>("&real" , typeof(Single) ),
             new KeyValuePair<string, Type>("&varchar, char, nchar, ntext, nvarchar, text" , typeof(String) ),
             new KeyValuePair<string, Type>("&time" , typeof(TimeSpan) ),
+        };
+
+        public static readonly List<Type> decimalTypes = new List<Type>() {
+            typeof(Decimal),
+            typeof(Double),
+            typeof(Single)
         };
     }
 }

@@ -11,9 +11,22 @@ using TTRider.PowerShellAsync;
 
 namespace Database
 {
+    /// <summary>
+    /// <para type="synopsis">Delete table from database.</para>
+    /// <para type="description">This cmdlet delete all rows from provided table in database.</para>
+    /// <para type="description">Rows are compared by DataTable primary key. After execution table always remain in database although it could be empty. (So it is not equivalent to drop)</para>
+    /// </summary>
+    /// <example>
+    ///   <para>We have part of table which we want to delete stored in variable, then pass it through pipeline to cmdlet Remove-DataTable which will process it and remove desired rows.</para>
+    ///   <code>$changedTable | Remove-DataTable $conn</code>
+    /// </example>
+    [Alias("sqldelete")]
     [Cmdlet(VerbsCommon.Remove, "DataTable")]
     public class RemoveDataTable : AsyncCmdlet
     {
+        /// <summary>
+        /// <para type="description">Connection to SQL database.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             Position = 0,
@@ -21,6 +34,9 @@ namespace Database
         )]
         public SqlConnection Connection { get; set; }
 
+        /// <summary>
+        /// <para type="description">Table rows which will be deleted from database.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             ValueFromPipeline = true,
@@ -29,6 +45,10 @@ namespace Database
         )]
         public DataTable Table { get; set; }
 
+        /// <summary>
+        /// <para type="description">Async begin processing.</para>
+        /// </summary>
+        /// <returns>Task with async opened Connection (if not yet opened).</returns>
         async protected override Task BeginProcessingAsync()
         {
             if (Connection.State != ConnectionState.Open)
@@ -38,15 +58,22 @@ namespace Database
             }
         }
 
+        /// <summary>
+        /// <para type="description">Async process record.</para>
+        /// </summary>
+        /// <returns>Task that will be complete when all rows are removed.</returns>
         protected override Task ProcessRecordAsync()
         {
-            if (Table.TableName == null)
-            {
-                throw new ArgumentException("Table does not have specified TableName property!");
-            }
+            Validators.ValidateTableName(Table, "Table");
+            Validators.ValidateTablePrimaryKey(Table, "Table");
+            
             return Task.WhenAll(Table.AsEnumerable().AsParallel().Select(ProcessRow));
         }
 
+        /// <summary>
+        /// <para type="description">Async end processing. Close connection</para>
+        /// </summary>
+        /// <returns>Completed task.</returns>
         protected override Task EndProcessingAsync()
         {
             if (Connection.State == ConnectionState.Open)

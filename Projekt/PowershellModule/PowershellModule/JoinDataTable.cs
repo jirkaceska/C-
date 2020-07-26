@@ -12,16 +12,31 @@ using System.Collections.ObjectModel;
 
 namespace Database
 {
+    /// <summary>
+    /// <para type="synopsis">Join two DataTables.</para>
+    /// <para type="description">Exectuion is based on LINQ join so it follow its syntax.</para>
+    /// </summary>
+    /// <example>
+    ///   <para>Join two DataTables of orders and customers based on primary key and foreign key. Order id, name of customer who ordered it and order date are selected.</para>
+    ///   <code>$orders | Join-DataTable $customers {$_.CustomerId} {$_.Id} {@($outer.Id, $inner.CustomerName, $outer.OrdersDate)}</code>
+    /// </example>
     [Cmdlet(VerbsCommon.Join, "DataTable")]
+    [OutputType(typeof(DataTable))]
     public class JoinDataTable : Cmdlet
     {
+        /// <summary>
+        /// <para type="description">Inner (right) table to join.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             Position = 0,
-            HelpMessage = "Inner (right) table to join"
+            HelpMessage = "Inner (right) table to join."
         )]
         public DataTable InnerTable { get; set; }
 
+        /// <summary>
+        /// <para type="description">Specify outer key selector using PSScript. $_ variable stand for actual row in OuterTable.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             Position = 1,
@@ -29,6 +44,9 @@ namespace Database
         )]
         public ScriptBlock OuterKeySelector { get; set; }
 
+        /// <summary>
+        /// <para type="description">Specify outer key selector using PSScript. $_ variable stand for actual row in InnerTable.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             Position = 2,
@@ -36,6 +54,9 @@ namespace Database
         )]
         public ScriptBlock InnerKeySelector { get; set; }
 
+        /// <summary>
+        /// <para type="description">Specify columns which will be selected using PSScript. $outer variable stand for column in OuterTable, similarly $inner is InnerTable. Use only array to in this script. E. g. @($outer.Id, $inner.Name)</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             Position = 3,
@@ -44,28 +65,38 @@ namespace Database
         )]
         public ScriptBlock ResultSelector { get; set; }
 
+        /// <summary>
+        /// <para type="description">Name of joined table. If not provided, JoinedTableName will be composed from names of tables concatenated by underscore.</para>
+        /// </summary>
         [Parameter(
             Position = 4,
-            HelpMessage = "Name of joined table. If not provided, JoinedTableName will be composed from names of tables concatenated by underscore"
+            HelpMessage = "Name of joined table. If not provided, JoinedTableName will be composed from names of tables concatenated by underscore."
         )]
         public string JoinedTableName { get; set; }
 
+        /// <summary>
+        /// <para type="description">Outer (left) table to join.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             ValueFromPipeline = true,
             Position = 5,
-            HelpMessage = "Outer (left) table to join"
+            HelpMessage = "Outer (left) table to join."
         )]
         public DataTable OuterTable { get; set; }
 
+        /// <summary>
+        /// <para type="description">Output of cmdlet - joined DataTable.</para>
+        /// </summary>
         public DataTable Result { get; private set; }
 
-        private readonly object tableLock = new object();
-
+        /// <summary>
+        /// <para type="description">Process record.</para>
+        /// </summary>
         protected override void ProcessRecord()
         {
-            Validators.ValidateTable(OuterTable, "Outer table");
-            Validators.ValidateTable(InnerTable, "Inner table");
+            Validators.ValidateTableName(OuterTable, "Outer table");
+            Validators.ValidateTableName(InnerTable, "Inner table");
             
             if (JoinedTableName == null)
             {
@@ -93,6 +124,9 @@ namespace Database
             }
         }
 
+        /// <summary>
+        /// <para type="description">End processing.</para>
+        /// </summary>
         protected override void EndProcessing()
         {
             WriteObject(Result);

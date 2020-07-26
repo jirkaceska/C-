@@ -7,11 +7,14 @@ using System.Threading.Tasks;
 
 namespace Database.Utils
 {
-    public static class FormatExtension
+    static class FormatExtension
     {
-        
         public static string FormatKeyValuePair(KeyValuePair<string, object> keyValuePair)
         {
+            if (keyValuePair.Value == null)
+            {
+                return $"{keyValuePair.Key} = 'NULL'";
+            }
             return $"{keyValuePair.Key} = '{keyValuePair.Value.ToString().Replace("'", "''")}'";
         }
 

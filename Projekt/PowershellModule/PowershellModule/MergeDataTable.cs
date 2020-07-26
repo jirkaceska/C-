@@ -11,9 +11,22 @@ using TTRider.PowerShellAsync;
 
 namespace Database
 {
+    /// <summary>
+    /// <para type="synopsis">Upsert table in database.</para>
+    /// <para type="description">This cmdlet upsert all rows from provided table in database.</para>
+    /// <para type="description">Rows are compared by DataTable primary key. If match is found then row is updated, otherwise is inserted.</para>
+    /// </summary>
+    /// <example>
+    ///   <para>We have table which was changed stored in variable, then pass it through pipeline to cmdlet Merge-DataTable which will process it and perform upsert.</para>
+    ///   <code>$changedTable | Merge-DataTable $conn</code>
+    /// </example>
+    [Alias("sqlupsert")]
     [Cmdlet(VerbsData.Merge, "DataTable")]
     public class MergeDataTable : AsyncCmdlet
     {
+        /// <summary>
+        /// <para type="description">Connection to SQL database.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             Position = 0,
@@ -21,17 +34,27 @@ namespace Database
         )]
         public SqlConnection Connection { get; set; }
 
+        /// <summary>
+        /// <para type="description">Table to upsert to database.</para>
+        /// </summary>
         [Parameter(
             Mandatory = true,
             ValueFromPipeline = true,
             Position = 1,
-            HelpMessage = "Table to upsert to database"
+            HelpMessage = "Table to upsert to database."
         )]
         public DataTable Table { get; set; }
-        
 
+
+        /// <summary>
+        /// <para type="description">Table heading formatted as tuple.</para>
+        /// </summary>
         public string ColumnNamesTuple { get; private set; }
 
+        /// <summary>
+        /// <para type="description">Async begin processing.</para>
+        /// </summary>
+        /// <returns>Task with async opened Connection (if not yet opened).</returns>
         async protected override Task BeginProcessingAsync()
         {
             if (Connection.State != ConnectionState.Open)
@@ -41,21 +64,24 @@ namespace Database
             }
         }
 
+        /// <summary>
+        /// <para type="description">Async process record.</para>
+        /// </summary>
+        /// <returns>Task that will be complete when all rows are upserted.</returns>
         async protected override Task ProcessRecordAsync()
         {
-            if (Table.PrimaryKey.Length == 0)
-            {
-                throw new ArgumentException("Primary key columns indices must not be empty!");
-            }
-            if (Table.TableName == null)
-            {
-                throw new ArgumentException("Table does not have specified TableName property!");
-            }
+            Validators.ValidateTableName(Table, "Table");
+            Validators.ValidateTablePrimaryKey(Table, "Table");
+            
             ColumnNamesTuple = Table.Columns.Cast<DataColumn>().ConcatAndWrap();
 
             await Task.WhenAll(Table.AsEnumerable().AsParallel().Select(ProcessRow));
         }
 
+        /// <summary>
+        /// <para type="description">Async end processing. Close connection</para>
+        /// </summary>
+        /// <returns>Completed task.</returns>
         protected override Task EndProcessingAsync()
         {
             if (Connection.State == ConnectionState.Open)
